@@ -1,0 +1,52 @@
+.custom-editor .placeholder:empty:before {
+    content: 'Start typing...';
+    color: #6b7280; /* gray-500 */
+    font-size: 2.25rem; /* text-4xl */
+    font-weight: 300;
+    position: absolute;
+    pointer-events: none;
+}
+
+.custom-editor .placeholder {
+    font-size: 2.25rem; /* text-4xl */
+    transition: font-size 0.3s ease;
+}
+
+.custom-editor .content {
+    font-size: 1rem; /* text-base */
+}
+
+.custom-editor h1 {
+    font-size: 2.25rem; /* text-4xl */
+}
+
+.custom-editor h2 {
+    font-size: 1.5rem; /* text-2xl */
+}
+
+.custom-editor button.active {
+}
+
+.custom-editor u {
+    text-decoration: underline;
+}
+
+.custom-editor ul {
+    list-style-type: none;
+    padding-left: 1em;
+}
+
+.custom-editor ul li::before {
+    content: "• ";
+    margin-left: -1em;
+}
+
+.custom-editor ol {
+    list-style-type: decimal;
+    padding-left: 1em;
+}
+
+.custom-editor ol li::before {
+    content: "‎ ‎ ‎ ";
+    margin-left: -1em;
+}
