@@ -4,21 +4,24 @@ import { useState, useEffect, useContext, useCallback } from 'react';
 import { AuthContext } from '@/context/AuthContext';
 import { RetrieveNotes } from '@/components/server/note/retrieve';
 import { SaveNote } from '@/components/server/note/save';
-import Editor from '@/components/elements/Editor';
 import { Loading } from '@/components/layout/Loading';
 import NavbarOffset from '@/components/layout/NavbarOffset';
 import ResponsiveContainer from '@/components/layout/ResponsiveContainer';
 import { createCompletion } from '@/components/server/completion/create';
+import EditorV2 from '@/components/elements/EditorV2';
+import { debounce } from 'lodash';
+import Editor from '@/components/elements/Editor';
 
 const NotePage = ({ params }) => {
     const [note, setNote] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
+    
     const [lastSavedNote, setLastSavedNote] = useState(null);
+    
     const { user, loading } = useContext(AuthContext);
     const { id } = params;
     const [completion, setCompletion] = useState('');
-    const [completionTimer, setCompletionTimer] = useState(null);
 
     useEffect(() => {
         if (!loading && !user) {
@@ -47,6 +50,7 @@ const NotePage = ({ params }) => {
     };
 
     const handleSave = useCallback(async () => {
+        return;
         if (!note) {
             console.error("Note is undefined");
             return;
@@ -65,7 +69,6 @@ const NotePage = ({ params }) => {
         setIsSaving(false);
 
         if (result.success) {
-            setNote(result.note);
             setLastSavedNote(result.note);
             if (id !== result.note.id) {
                 window.location.href = `/note/${result.note.id}`;
@@ -76,6 +79,7 @@ const NotePage = ({ params }) => {
     }, [note, lastSavedNote, id]);
 
     useEffect(() => {
+        return
         const autoSaveInterval = setInterval(() => {
             if (note && JSON.stringify(note) !== JSON.stringify(lastSavedNote)) {
                 handleSave();
@@ -84,34 +88,6 @@ const NotePage = ({ params }) => {
 
         return () => clearInterval(autoSaveInterval);
     }, [note, lastSavedNote, handleSave]);
-    
-    const handleEditorChange = useCallback((content) => {
-        setNote({ ...note, html: content });
-
-        // Clear the existing timer if there is one
-        if (completionTimer) {
-            clearTimeout(completionTimer);
-        }
-
-        // Set a new timer
-        const newTimer = setTimeout(async () => {
-            const completionText = await createCompletion({ content: note.html });
-            console.log('Completion response:', completionText);
-            setCompletion(completionText.completion);
-        }, 500);
-
-        // Save the new timer
-        setCompletionTimer(newTimer);
-    }, [note, id, completionTimer]);
-
-    useEffect(() => {
-        // Cleanup function to clear the timer when the component unmounts
-        return () => {
-            if (completionTimer) {
-                clearTimeout(completionTimer);
-            }
-        };
-    }, [completionTimer]);
 
     if (loading || isLoading) {
         return <Loading />;
@@ -140,12 +116,15 @@ const NotePage = ({ params }) => {
                             {isSaving ? 'Saving...' : hasUnsavedChanges ? 'Changes not saved' : 'All changes saved'}
                         </div>
                     </div>
-                    <Editor
-                        clearCompletion={() => setCompletion('')}
-                        completion={completion}
+
+                    <EditorV2
                         value={note?.html || ''}
-                        onChange={handleEditorChange}
                     />
+
+                    {/* <Editor
+                        onChange={handleEditorChange}
+                        value={note?.html || ''}
+                    /> */}
                 </div>
             </div>
         </ResponsiveContainer>

@@ -13,7 +13,7 @@ export const createCompletion = async ({
     or not it is appropriate to create a completion, if not, just return "<ignore />".
     `.split("\n\n").join(""),
     content = '',
-    completionLength = 2000,
+    completionLength = 1000,
 }) => {
     try {
         if (!content) throw new Error('Content is required');
@@ -23,7 +23,7 @@ export const createCompletion = async ({
         if (!user) throw new Error('User not found');
 
         const completion = await groq.chat.completions.create({
-            model: 'llama-3.1-70b-versatile',
+            model: 'llama-3.1-8b-instant',
             messages: [
                 {
                     role: 'system',
