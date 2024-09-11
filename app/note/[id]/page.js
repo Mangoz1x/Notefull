@@ -8,9 +8,9 @@ import { Loading } from '@/components/layout/Loading';
 import NavbarOffset from '@/components/layout/NavbarOffset';
 import ResponsiveContainer from '@/components/layout/ResponsiveContainer';
 import { createCompletion } from '@/components/server/completion/create';
-import EditorV2 from '@/components/elements/EditorV2';
+import EditorV2 from '@/components/elements/Editor/Old/EditorV2';
 import { debounce } from 'lodash';
-import Editor from '@/components/elements/Editor';
+import { Editor } from '@/components/elements/Editor/Index';
 
 const NotePage = ({ params }) => {
     const [note, setNote] = useState(null);
@@ -117,14 +117,9 @@ const NotePage = ({ params }) => {
                         </div>
                     </div>
 
-                    <EditorV2
-                        value={note?.html || ''}
-                    />
+                    {/* <EditorV2 value={note?.html || ''} /> */}
 
-                    {/* <Editor
-                        onChange={handleEditorChange}
-                        value={note?.html || ''}
-                    /> */}
+                    <Editor />
                 </div>
             </div>
         </ResponsiveContainer>
