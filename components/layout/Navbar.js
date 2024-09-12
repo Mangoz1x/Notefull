@@ -18,7 +18,7 @@ const PrimaryButton = ({ content, href }) => (
 );
 
 const Navbar = () => {
-    const { theme, toggleTheme } = useTheme();
+    const { theme, toggleTheme, stickyNav } = useTheme();
     const { user } = useContext(AuthContext);
 
     const [isBurgerOpen, setIsBurgerOpen] = useState(false);
@@ -65,7 +65,7 @@ const Navbar = () => {
     }, [isBurgerOpen]);
 
     return (
-        <div className={`${!transparent && 'bg-[rgba(1,7,28,0.6)] backdrop-blur-2xl'} transition-all w-full h-fit fixed top-0 z-[10]`}>
+        <div className={`${(!transparent && stickyNav) && 'bg-[rgba(1,7,28,0.6)] backdrop-blur-2xl'} transition-all w-full h-fit top-0 z-[10] ${stickyNav ? 'fixed' : 'absolute'}`}>
             <ResponsiveContainer>
                 <div className="py-8 w-full h-fit flex items-center justify-between">
                     <a href="/">

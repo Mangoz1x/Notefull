@@ -37,7 +37,7 @@ export const AutocompleteExtension = Extension.create({
                     this.editor.commands.insertContent(autocompleteSuggestion);
                 }
                 return true;
-            },
+            }
         };
     },
 
@@ -51,7 +51,7 @@ export const AutocompleteExtension = Extension.create({
                     },
                     apply: (transaction, oldState, _, newState) => {
                         const { selection } = newState;
-                        if (!(selection instanceof TextSelection)) {
+                        if (!(selection instanceof TextSelection) || !selection.empty) {
                             return DecorationSet.empty;
                         }
 
@@ -65,9 +65,11 @@ export const AutocompleteExtension = Extension.create({
 
                         const decorations = DecorationSet.create(newState.doc, [decoration]);
 
-                        // Call the autocompletion function asynchronously
-                        const editorText = transaction.doc.textBetween(0, transaction.doc.content.size, '\n');
-                        callAutocomplete(editorText, $head.pos);
+                        // Call the autocompletion function asynchronously only if no text is highlighted
+                        if (selection.empty) {
+                            const editorText = transaction.doc.textBetween(0, transaction.doc.content.size, '\n');
+                            callAutocomplete(editorText, $head.pos);
+                        }
 
                         return decorations;
                     },

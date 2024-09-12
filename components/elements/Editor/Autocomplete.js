@@ -13,7 +13,7 @@ export const decideAutocompleteText = async (text, cursorPosition) => {
     });
 
     const completionText = completion?.completion || '';
-    console.log('completionText', completionText);
+
     if (!completionText || completionText === '<ignore/>') {
         return '';
     }

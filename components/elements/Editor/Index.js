@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Table from '@tiptap/extension-table';
@@ -11,13 +11,14 @@ import TextStyle from '@tiptap/extension-text-style';
 import Color from '@tiptap/extension-color';
 import { AutocompleteExtension } from './AutocompleteExtension';
 import { MenuBar } from './MenuBar';
+import { useTheme } from '@/context/ThemeContext';
+import { getHTMLFromFragment } from '@tiptap/core'
 
 export const Editor = ({
     value,
     onChange = () => { }
 }) => {
-    const [completion, setCompletion] = useState('');
-    const ghostPreviewRef = useRef(null);
+    const { theme } = useTheme();
 
     const editor = useEditor({
         extensions: [
@@ -34,8 +35,29 @@ export const Editor = ({
         content: value,
         onUpdate: ({ editor }) => {
             onChange(editor.getHTML());
-        },
+        }
     });
+
+    // New function to handle key combination
+    const handleKeyDown = useCallback((event) => {
+        if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
+            event.preventDefault();
+            if (editor) {
+                editor.chain().focus().command(({ tr }) => {
+                    console.log(getHTMLFromFragment(tr.doc.slice(tr.selection.from, tr.selection.to).content, editor.schema))
+                    return true
+                }).run()
+            }
+        }
+    }, [editor]);
+
+    // Add event listener for key combination
+    useEffect(() => {
+        document.addEventListener('keydown', handleKeyDown);
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [handleKeyDown]);
 
     useEffect(() => {
         if (editor && value !== editor.getHTML()) {
@@ -49,10 +71,9 @@ export const Editor = ({
 
             <div className="prose max-w-none relative">
                 <EditorContent
-                    className="outline-none focus:outline-none"
+                    className="outline-none focus:outline-none dark:text-white text-black"
                     editor={editor}
                 />
-                <div ref={ghostPreviewRef} className="ProseMirror opacity-[0.3] absolute" dangerouslySetInnerHTML={{ __html: completion }}></div>
             </div>
 
 
@@ -72,7 +93,7 @@ export const Editor = ({
                 }
                 .ProseMirror td,
                 .ProseMirror th {
-                    border: 1px solid #2b2b2b;
+                    border: 1px solid ${theme === 'dark' ? '#2b2b2b' : '#d1d5db'};
                     box-sizing: border-box;
                     min-width: 1em;
                     padding: 3px 5px;
@@ -80,7 +101,7 @@ export const Editor = ({
                     vertical-align: top;
                 }
                 .ProseMirror th {
-                    background-color: #2b2b2b;
+                    background-color: ${theme === 'dark' ? '#2b2b2b' : '#ececec'};
                     font-weight: bold;
                     text-align: left;
                 }
@@ -107,7 +128,7 @@ export const Editor = ({
                     opacity: 0.5;
                     pointer-events: none;
                     user-select: none;
-                    color: #888;
+                    color: ${theme === 'dark' ? '#888' : '#888'};
                 }
                 .ProseMirror p {
                     width: fit-content !important;

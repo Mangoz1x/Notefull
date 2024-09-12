@@ -7,10 +7,8 @@ import { SaveNote } from '@/components/server/note/save';
 import { Loading } from '@/components/layout/Loading';
 import NavbarOffset from '@/components/layout/NavbarOffset';
 import ResponsiveContainer from '@/components/layout/ResponsiveContainer';
-import { createCompletion } from '@/components/server/completion/create';
-import EditorV2 from '@/components/elements/Editor/Old/EditorV2';
-import { debounce } from 'lodash';
 import { Editor } from '@/components/elements/Editor/Index';
+import { useTheme } from '@/context/ThemeContext';
 
 const NotePage = ({ params }) => {
     const [note, setNote] = useState(null);
@@ -20,8 +18,8 @@ const NotePage = ({ params }) => {
     const [lastSavedNote, setLastSavedNote] = useState(null);
     
     const { user, loading } = useContext(AuthContext);
+    const { setStickyNav } = useTheme();
     const { id } = params;
-    const [completion, setCompletion] = useState('');
 
     useEffect(() => {
         if (!loading && !user) {
@@ -29,6 +27,8 @@ const NotePage = ({ params }) => {
         } else if (user) {
             fetchNote();
         }
+
+        setStickyNav(false);
     }, [user, loading, id]);
 
     const fetchNote = async () => {
@@ -50,13 +50,12 @@ const NotePage = ({ params }) => {
     };
 
     const handleSave = useCallback(async () => {
-        return;
         if (!note) {
             console.error("Note is undefined");
             return;
         }
 
-        if (JSON.stringify(note) === JSON.stringify(lastSavedNote)) {
+        if (note?.html === lastSavedNote?.html && note?.name === lastSavedNote?.name) {
             return; // No changes to save
         }
 
@@ -69,7 +68,7 @@ const NotePage = ({ params }) => {
         setIsSaving(false);
 
         if (result.success) {
-            setLastSavedNote(result.note);
+            setLastSavedNote(note);
             if (id !== result.note.id) {
                 window.location.href = `/note/${result.note.id}`;
             }
@@ -79,7 +78,6 @@ const NotePage = ({ params }) => {
     }, [note, lastSavedNote, id]);
 
     useEffect(() => {
-        return
         const autoSaveInterval = setInterval(() => {
             if (note && JSON.stringify(note) !== JSON.stringify(lastSavedNote)) {
                 handleSave();
@@ -117,9 +115,7 @@ const NotePage = ({ params }) => {
                         </div>
                     </div>
 
-                    {/* <EditorV2 value={note?.html || ''} /> */}
-
-                    <Editor />
+                    <Editor value={note?.html || ''} onChange={(html) => setNote({ ...note, html })} />
                 </div>
             </div>
         </ResponsiveContainer>

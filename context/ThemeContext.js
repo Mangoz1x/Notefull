@@ -7,6 +7,7 @@ const ThemeContext = createContext(undefined);
 export function ThemeProvider({ children }) {
     const [theme, setTheme] = useState('light');
     const [mounted, setMounted] = useState(false);
+    const [stickyNav, setStickyNav] = useState(true);
 
     useEffect(() => {
         setMounted(true);
@@ -34,7 +35,7 @@ export function ThemeProvider({ children }) {
     };
 
     return (
-        <ThemeContext.Provider value={{ theme, toggleTheme, mounted }}>
+        <ThemeContext.Provider value={{ stickyNav, setStickyNav, theme, toggleTheme, mounted }}>
             {children}
         </ThemeContext.Provider>
     );
