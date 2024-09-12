@@ -27,6 +27,8 @@ export const checkAuth = async () => {
             user: dbUser,
         };
     } catch (error) {
+        cookies().delete('userData');
+
         return {
             authenticated: false,
             error: error.message,

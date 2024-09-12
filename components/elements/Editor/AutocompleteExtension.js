@@ -4,22 +4,39 @@ import { Plugin, PluginKey } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
 import { TextSelection } from "@tiptap/pm/state";
 
+let autocompleteSuggestion = '';
+
+let autocompleteTimeout = null;
+
+// params: editorText, cursorPosition
+const callAutocomplete = async (editorText, cursorPosition) => {
+    // Ensures a completion is only made after 500ms of inactivity
+    
+    if (autocompleteTimeout) {
+        clearTimeout(autocompleteTimeout);
+    }
+
+    autocompleteTimeout = setTimeout(async () => {
+        decideAutocompleteText(editorText, cursorPosition).then(suggestion => {
+            const suggestionSpan = document.querySelector('.autocomplete-suggestion');
+            if (suggestionSpan) {
+                autocompleteSuggestion = suggestion;
+                suggestionSpan.innerHTML = suggestion;
+            }
+        });
+    }, 500);
+};
+
 export const AutocompleteExtension = Extension.create({
     name: 'AutocompleteExtension',
 
     addKeyboardShortcuts() {
         return {
             Tab: () => {
-                const { selection } = this.editor.state;
-                const { $head } = selection;
-                const currentLineText = $head.parent.textContent;
-                const suggestion = decideAutocompleteText(currentLineText, $head.pos);
-
-                if (suggestion) {
-                    this.editor.commands.insertContent(suggestion);
-                    return true;
+                if (autocompleteSuggestion) {
+                    this.editor.commands.insertContent(autocompleteSuggestion);
                 }
-                return false;
+                return true;
             },
         };
     },
@@ -32,28 +49,27 @@ export const AutocompleteExtension = Extension.create({
                     init() {
                         return DecorationSet.empty;
                     },
-                    apply: (transaction, oldState) => {
-                        const { selection } = transaction;
+                    apply: (transaction, oldState, _, newState) => {
+                        const { selection } = newState;
                         if (!(selection instanceof TextSelection)) {
                             return DecorationSet.empty;
                         }
 
                         const { $head } = selection;
-                        const currentLineText = $head.parent.textContent;
-                        const suggestion = decideAutocompleteText(currentLineText, $head.pos);
-
-                        if (!suggestion) {
-                            return DecorationSet.empty;
-                        }
 
                         const decoration = Decoration.widget($head.pos, () => {
                             const span = document.createElement('span');
                             span.className = 'autocomplete-suggestion';
-                            span.textContent = suggestion;
                             return span;
-                        });
+                        }, { side: 1 });
 
-                        return DecorationSet.create(transaction.doc, [decoration]);
+                        const decorations = DecorationSet.create(newState.doc, [decoration]);
+
+                        // Call the autocompletion function asynchronously
+                        const editorText = transaction.doc.textBetween(0, transaction.doc.content.size, '\n');
+                        callAutocomplete(editorText, $head.pos);
+
+                        return decorations;
                     },
                 },
                 props: {

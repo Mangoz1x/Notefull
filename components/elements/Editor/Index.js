@@ -30,6 +30,7 @@ export const Editor = ({
             Color,
             AutocompleteExtension,
         ],
+        immediatelyRender: false,
         content: value,
         onUpdate: ({ editor }) => {
             onChange(editor.getHTML());
@@ -120,6 +121,19 @@ export const Editor = ({
                 .ProseMirror td.selectedCell,
                 .ProseMirror th.selectedCell {
                     background-color: rgba(200, 200, 255, 0.4);
+                }
+
+                // The suggestion text preview
+                .autocomplete-suggestion {
+                    color: #888;
+                    position: relative;
+                }
+                .autocomplete-suggestion::after {
+                    content: attr(data-suggestion);
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    pointer-events: none;
                 }
             `}</style>
         </div>
