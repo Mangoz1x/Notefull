@@ -65,7 +65,7 @@ const Navbar = () => {
     }, [isBurgerOpen]);
 
     return (
-        <div className={`${(!transparent && stickyNav) && 'bg-[rgba(1,7,28,0.6)] backdrop-blur-2xl'} transition-all w-full h-fit top-0 z-[10] ${stickyNav ? 'fixed' : 'absolute'}`}>
+        <div className={`${(!transparent && (stickyNav || isBurgerOpen)) && 'bg-[rgba(225,225,225,0.6)] dark:bg-[rgba(1,7,28,0.6)] backdrop-blur-2xl'} transition-all w-full h-fit top-0 z-[10] ${stickyNav ? 'fixed' : 'absolute'}`}>
             <ResponsiveContainer>
                 <div className="py-8 w-full h-fit flex items-center justify-between">
                     <a href="/">
@@ -81,7 +81,7 @@ const Navbar = () => {
 
                         <div className="w-fit h-fit flex gap-x-4">
                             {/* Hamburger menu button */}
-                            <div onClick={() => setIsBurgerOpen(!isBurgerOpen)} className="cursor-pointer xl:hidden block text-white flex items-center relative w-7 h-auto">
+                            <div onClick={() => setIsBurgerOpen(!isBurgerOpen)} className="cursor-pointer xl:hidden block dark:text-white text-black flex items-center relative w-7 h-auto">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`absolute size-7 transition-all duration-300 ${isBurgerOpen ? 'opacity-0 scale-[0.5]' : 'opacity-1 scale-1'}`}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                                 </svg>
@@ -94,7 +94,7 @@ const Navbar = () => {
 
                         <motion.button
                             onClick={toggleTheme}
-                            className="ml-10 bg-gray-200 dark:bg-gray-800 p-2 rounded-full transition duration-300 hover:bg-gray-300 dark:hover:bg-gray-700"
+                            className="ml-10 bg-gray-200 dark:bg-gray-800 p-2 shrink-0 w-12 h-12 rounded-full transition duration-300 hover:bg-gray-300 dark:hover:bg-gray-700"
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                         >
@@ -116,7 +116,7 @@ const Navbar = () => {
                 >
                     <div className="flex flex-col w-full">
                         {links.primary.map(({ url, name }, index) => (
-                            <a href={url} key={`NavbarHamburgerLink${index}`} className="select-none text-white text-lg text-center py-2.5 rounded-lg hover:bg-gray-100 transition-all">{name}</a>
+                            <a href={url} key={`NavbarHamburgerLink${index}`} className="select-none dark:text-white text-black text-lg text-center py-2.5 rounded-lg dark:hover:bg-gray-700 hover:bg-gray-100 transition-all">{name}</a>
                         ))}
                         <div className="h-4 w-full"></div>
                     </div>

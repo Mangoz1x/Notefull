@@ -83,10 +83,7 @@ export const Editor = ({
 
             const caretTopPosition = rect.bottom + window.scrollY;
             const textareaRect = smallChatRef.current.getBoundingClientRect();
-            console.log(textareaRect);
-
             smallChatRef.current.style.top = (caretTopPosition - (textareaRect.height + 30)) + 'px';
-            console.log('Caret position from top:', caretTopPosition + 'px');
         }
     }
 
@@ -182,11 +179,11 @@ export const Editor = ({
                         </button>
                     </div>
 
-                    <textarea name="smallChatQuery" placeholder="e.g. Make a table with 3 columns and 2 rows" className="max-h-[150px] resize-none border-l pl-2 border-gray-700 h-[150px] mt-2 text-white w-full h-full bg-transparent outline-none focus:outline-none">
+                    <textarea name="smallChatQuery" placeholder="e.g. Make a table with 3 columns and 2 rows" className="max-h-[150px] resize-none border-l pl-2 border-gray-700 h-[150px] mt-2 dark:text-white text-black w-full h-full bg-transparent outline-none focus:outline-none">
 
                     </textarea>
 
-                    <div className="w-full flex items-center justify-end">
+                    <div className="w-full flex gap-x-2 items-center justify-end">
                         {smallChatCompletion ? (
                             <>
                                 <button type="button" onClick={() => {

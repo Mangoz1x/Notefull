@@ -7,7 +7,7 @@ import { TextSelection } from "@tiptap/pm/state";
 let autocompleteSuggestion = '';
 let autocompleteTimeout = null;
 
-window.addEventListener('updateSuggestion', (event) => {
+if (typeof window !== undefined) window.addEventListener('updateSuggestion', (event) => {
     autocompleteSuggestion = event.detail.suggestion;
 
     const suggestionSpan = document.querySelector('.autocomplete-suggestion');
