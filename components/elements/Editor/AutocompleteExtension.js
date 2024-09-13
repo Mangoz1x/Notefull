@@ -5,13 +5,22 @@ import { Decoration, DecorationSet } from "@tiptap/pm/view";
 import { TextSelection } from "@tiptap/pm/state";
 
 let autocompleteSuggestion = '';
-
 let autocompleteTimeout = null;
+
+window.addEventListener('updateSuggestion', (event) => {
+    autocompleteSuggestion = event.detail.suggestion;
+
+    const suggestionSpan = document.querySelector('.autocomplete-suggestion');
+    if (suggestionSpan) {
+        suggestionSpan.innerHTML = autocompleteSuggestion;
+        if (autocompleteTimeout) clearTimeout(autocompleteTimeout);
+    }
+});
 
 // params: editorText, cursorPosition
 const callAutocomplete = async (editorText, cursorPosition) => {
     // Ensures a completion is only made after 500ms of inactivity
-    
+
     if (autocompleteTimeout) {
         clearTimeout(autocompleteTimeout);
     }
@@ -19,6 +28,7 @@ const callAutocomplete = async (editorText, cursorPosition) => {
     autocompleteTimeout = setTimeout(async () => {
         decideAutocompleteText(editorText, cursorPosition).then(suggestion => {
             const suggestionSpan = document.querySelector('.autocomplete-suggestion');
+
             if (suggestionSpan) {
                 autocompleteSuggestion = suggestion;
                 suggestionSpan.innerHTML = suggestion;
